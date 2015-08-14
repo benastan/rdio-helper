@@ -27,7 +27,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "dotenv"
   spec.add_development_dependency "rack-test"
+  spec.add_development_dependency "pry"
 
   spec.add_dependency 'faraday'
   spec.add_dependency 'sinatra'
+  spec.add_dependency 'interactor'
+  spec.add_dependency 'pg'
+  spec.add_dependency 'sequel'
 end
