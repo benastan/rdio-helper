@@ -6,6 +6,7 @@ module Rdio
     autoload :Client, 'rdio/helper/client'
     autoload :Application, 'rdio/helper/application'
     autoload :FileCache, 'rdio/helper/file_cache'
+    autoload :Track, 'rdio/helper/track'
     autoload :GroupActivityStreamByWeek, 'rdio/helper/group_activity_stream_by_week'
   end
 end

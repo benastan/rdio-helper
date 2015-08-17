@@ -1,66 +1,19 @@
-<% @updates_by_week.each do |(week_number, updates)| %>
-  <div>
-    <table class="table">
-      <thead>
+<div>
+  <table class="table">
+    <tbody>
+      <% @updates_by_week.each do |(week_number, updates)| %>
         <tr>
-          <th colspan="2">
-            <%= week_number %>
-          </th>
+          <td colspan="2">
+            <% if playlist_exists?(week_number.to_s) %>
+              <i class="glyphicon glyphicon-ok" style="color: green; font-size: 12px;"></i>
+            <% else %>
+              <i class="glyphicon glyphicon-remove" style="color: red; font-size: 12px;"></i>
+            <% end %>
+
+            <a href="/weeks/<%= week_number %>"><%= week_number %></a>
+          </td>
         </tr>
-      </thead>
-
-      <tbody>
-        <% updates.each do |update| %>
-            <% if true || update['update_type'] == Rdio::Helper::Client::ActivityStreamType::TRACK_ADDED_TO_COLLECTION %>
-                <% update['items'].each do |item| %>
-                  <tr>
-                    <td>
-                      <%= item['name'] %> - <%= item['artist'] %>
-                    </td>
-                  </tr>
-                <% end %>
-            <% end %>
-        <% end %>
-      </tbody>
-    </table>
-    <% if playlist_exists?(week_number.to_s) %>
-      <div class="well">
-        <i class="glyphicon glyphicon-ok" style="color: green; font-size: 12px;"></i>
-        Playlist exists!
-      </div>
-    <% else %>
-      <form action="/playlists" method="POST">
-        <div class="well">
-          <input type="hidden" name="playlist[name]" value="<%= week_number %>"/>
-          <% updates.each do |update| %>
-              <% if update['update_type'] == Rdio::Helper::Client::ActivityStreamType::USER_FAVORITED_AN_ITEM %>
-                <% update['items'].each do |item| %>
-                  <% if item['trackKeys'] %>
-                    <% item['trackKeys'].each do |track_id| %>
-                      <% if favorites_includes_track?(track_id) %>
-                      <input type="hidden" name="playlist[tracks][]" value="<%= track_id %>"/>
-                      <% end %>
-                    <% end %>
-                  <% end %>
-                <% end %>
-            <% end %>
-          <% end %>
-          <div>
-            <button class="btn btn-default">
-              <i class="glyphicon glyphicon-cloud-upload" style="color: darkslategray; font-size: 12px;"></i>
-              Create Playlist
-            </button>
-          </div>
-
-          <p>
-
-            <i class="glyphicon glyphicon-remove" style="color: red; font-size: 12px;"></i>
-            Playlist does not exist in Rdio.
-          </p>
-        </div>
-      </form>
-    <% end %>
-
-    <hr/>
-  </div>
-<% end %>
+      <% end %>
+    </tbody>
+  <table>
+</div>

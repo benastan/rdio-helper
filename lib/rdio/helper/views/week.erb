@@ -1,0 +1,37 @@
+<h1><%= @week_number %></h1>
+
+<a href="?refresh=true">Refresh</a>
+
+<% if playlist_exists?(@week_number.to_s) %>
+<% end %>
+
+<form action="/playlists" method="POST">
+  <input type="hidden" name="playlist[name]" value="<%= @week_number %>"/>
+  <% @updates.each do |update| %>
+    <% update['items'].each do |item| %>
+    <h4><%= item['name'] %> - <%= item['artist'] %></h4>
+    <table class="table">
+      <tbody>
+      <% get_tracks(item['trackKeys']).each do |(track_id, track)| %>
+        <% if track['isInCollection'] %>
+        <input type="hidden" name="playlist[tracks][]" value="<%= track_id %>"/>
+        <tr>
+          <td><%= track['artist'] %> - <%= track['name'] %></td>
+        </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+    <% end %>
+  <% end %>
+
+  <button class="btn btn-default">
+    <i class="glyphicon glyphicon-cloud-upload" style="color: darkslategray; font-size: 12px;"></i>
+
+    <% if playlist_exists?(@week_number.to_s) %>
+      Sync Playlist
+    <% else %>
+      Create Playlist
+    <% end %>
+  </button>
+</form>
