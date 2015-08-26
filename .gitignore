@@ -9,4 +9,5 @@
 /tmp/
 .env
 cache
+backup
 junk*

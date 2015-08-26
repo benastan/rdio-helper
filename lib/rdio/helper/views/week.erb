@@ -2,20 +2,31 @@
 
 <a href="?refresh=true">Refresh</a>
 
-<% if playlist_exists?(@week_number.to_s) %>
-<% end %>
-
 <form action="/playlists" method="POST">
   <input type="hidden" name="playlist[name]" value="<%= @week_number %>"/>
   <% @updates.each do |update| %>
     <% update['items'].each do |item| %>
-    <h4><%= item['name'] %> - <%= item['artist'] %></h4>
+
     <table class="table">
+      <thead>
+        <tr>
+          <th width="2%"><input type="checkbox" checked="checked" data-toggle-checkboxes="<%= item['key'] %>" /></th>
+          <th><%= item['name'] %> - <%= item['artist'] %></th>
+        </tr>
+      </thead>
       <tbody>
       <% get_tracks(item['trackKeys']).each do |(track_id, track)| %>
         <% if track['isInCollection'] %>
-        <input type="hidden" name="playlist[tracks][]" value="<%= track_id %>"/>
         <tr>
+          <td width="2%">
+            <% if !playlist_exists?(@week_number.to_s) %>
+            <input type="checkbox" name="playlist[tracks][]" value="<%= track_id %>" checked="checked" data-toggle-checkboxes-<%= item['key'] %>="" />
+            <% elsif playlist_includes_track?(@week_number.to_s, track_id) %>
+            <input type="checkbox" name="playlist[tracks][]" value="<%= track_id %>" checked="checked" data-toggle-checkboxes-<%= item['key'] %>="" />
+            <% else %>
+            <input type="checkbox" name="playlist[tracks][]" value="<%= track_id %>" data-toggle-checkboxes-<%= item['key'] %>="" />
+            <% end %>
+          </td>
           <td><%= track['artist'] %> - <%= track['name'] %></td>
         </tr>
         <% end %>

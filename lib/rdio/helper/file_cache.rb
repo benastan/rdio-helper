@@ -3,9 +3,10 @@ module Rdio
     class FileCache
       attr_reader :storage, :max_age, :cache_name
 
-      def initialize(cache_name, max_age: nil)
+      def initialize(cache_name, max_age: nil, cache_destination: nil)
+        @cache_destination = Pathname(cache_destination || './cache')
         @cache_name = cache_name
-        @storage = Pathname('./cache/%s.json' % cache_name)
+        @storage = @cache_destination.join('%s.json' % cache_name)
         @max_age = max_age
       end
 

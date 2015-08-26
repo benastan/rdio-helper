@@ -53,7 +53,13 @@ module Rdio
           tracks: playlist[:tracks]
         }
 
-        client.execute_api_method(:deletePlaylist, playlist: playlist[:name]) if playlist_exists?(playlist[:name])
+        if playlist_exists?(playlist[:name].to_s)
+          playlists_to_delete = playlists.select { |existing_playlist| existing_playlist['name'] == playlist[:name].to_s }
+          backup = FileCache.new(Time.new.to_i.to_s, cache_destination: './backup')
+          backup.cache{playlists_to_delete}
+          playlists_to_delete.each { |playlist| client.execute_api_method(:deletePlaylist, playlist: playlist['key']) }
+        end
+
         client.execute_api_method(:createPlaylist, **playlist_attributes)
         FileCache.new('playlists').clear!
         redirect to('/')
@@ -71,7 +77,13 @@ module Rdio
         end
 
         def playlists
-          @playlists = cache(:playlists){client.execute_api_method(:getPlaylists)['owned']}
+          @playlists = cache(:playlists){client.execute_api_method(:getPlaylists, extras: [ :trackKeys ])['owned']}
+        end
+
+        def playlist_includes_track?(playlist_name, track_key)
+          return false unless playlist_exists?(playlist_name)
+          playlist = playlists.find { |playlist| playlist['name'] == playlist_name }
+          playlist['trackKeys'].include?(track_key)
         end
 
         def playlist_exists?(playlist_name)
@@ -95,7 +107,7 @@ module Rdio
         end
 
         def tracks
-          Track.retrieve_tracks(favorited_track_keys, client: client, batch_size: 250)
+          Track.retrieve_tracks(favorited_track_keys, client: client, batch_size: 100)
         end
 
         def cache(cache_name, &block)
